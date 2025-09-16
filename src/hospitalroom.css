@@ -1,0 +1,107 @@
+.room {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background: #f0f8ff no-repeat center;
+  background-size: cover;
+  overflow: hidden;
+  padding: 24px;
+  padding-bottom: 100px; /* ruang bawah supaya kaki dokter tidak kepotong */
+  box-sizing: border-box;
+}
+
+/* Tombol kembali & header */
+.backBtn {
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #1976d2;
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+.backBtn:hover { transform: translateY(-1px); background: #d7ecff; }
+.backIcon { font-size: 22px; }
+
+.header { text-align: center; }
+.title { margin: 0 0 8px; color: #1976d2; }
+.subtitle { margin: 0; color: #424242; font-weight: 600; }
+
+/* Pasien (absolute di atas latar) */
+.patientBtn { position: absolute; background: transparent; border: none; cursor: pointer; padding: 0; }
+.patientBtn:focus-visible { outline: 3px solid #90caf9; border-radius: 12px; }
+
+.patientImg {
+  width: 110px; /* sesuaikan bila perlu */
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.2));
+}
+
+.patientName {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -22px;
+  background: rgba(255,255,255,.95);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #424242;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  font-size: 13px;
+}
+
+/* Badge status kecil */
+.badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  border: 1px solid;
+}
+.badge.ok   { background:#e8f5e9; color:#2e7d32; border-color:#a5d6a7; }
+.badge.done { background:#e3f2fd; color:#1565c0; border-color:#90caf9; }
+
+/* Dokter selalu di atas layer lain */
+.doctorLabel {
+  position: absolute;
+  color: #ff5722;
+  font-weight: 700;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+  z-index: 1000;
+}
+.doctorImg {
+  position: absolute;
+  width: 120px;   /* ubah jika PNG terlalu besar/kecil */
+  height: auto;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.25));
+  pointer-events: none; /* biar klik ke pasien tidak tertutup */
+  animation: doc-bounce .6s ease-in-out infinite;
+  z-index: 999;
+}
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 50px;
+  background: #1976d2; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+/* Animasi kecil agar sprite hidup */
+@keyframes doc-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}

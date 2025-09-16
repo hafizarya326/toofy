@@ -1,0 +1,277 @@
+/* --- ROOT FIX --- */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- LOBBY (gambar 1) --- */
+.lobby-container {
+  height: 100dvh;
+  width: 100%;
+  background: no-repeat center center / cover;
+  position: relative;
+  overflow: hidden;
+  font-family: "Comic Sans MS", Comic Sans, cursive;
+}
+
+/* Tombol ikon kanan-atas */
+.icon-btn {
+  position: absolute;
+  top: clamp(12px, 2.2vh, 24px);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.25));
+  transition: transform .12s ease;
+}
+.icon-btn:hover { transform: scale(1.05); }
+.icon-btn:active { transform: scale(0.97); }
+.icon-btn img {
+  width: clamp(42px, 7vw, 72px);
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+.icon-right { right: clamp(12px, 2.5vw, 28px); }
+
+.lobby-button {
+  position: absolute;
+  left: 32%;
+  top: 45%;
+  transform: translateX(-50%);
+  width: min(60vw, 300px);
+  cursor: pointer;
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,.25));
+  transition: transform .12s ease, filter .12s ease;
+}
+.lobby-button:hover {
+  transform: translateX(-50%) scale(1.02);
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,.28));
+}
+.lobby-button:active {
+  transform: translateX(-50%) scale(0.98);
+}
+
+/* White flash overlay saat Start */
+.whiteout {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2000;
+}
+.flash-in { animation: whiteIn .8s ease-in forwards; }
+
+/* --- WELCOME (fullscreen overlay) --- */
+.welcome-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,.25);
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 999;
+  animation: fadeIn .2s ease-out;
+}
+
+/* Background ruangan */
+.welcome-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+
+/* Karakter & bubble */
+.doctor {
+  position: absolute;
+  /* agak ke tengah namun condong kiri agar bubble lega */
+  left: 44%;
+  transform: translateX(-50%);
+  bottom: clamp(24px, 6vh, 70px);
+  display: flex;
+  align-items: center;         /* sejajarkan tengah karakter dengan bubble */
+  gap: clamp(14px, 2.4vw, 28px);
+}
+
+/* efek masuk seperti VN */
+.vn-enter { animation: vnIn .5s ease-out both; }
+
+.doctor-img {
+  width: clamp(130px, 20vw, 220px);
+  height: auto;
+  user-select: none;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.25));
+}
+
+/* ===================== */
+/*   SPEECH BUBBLE BARU  */
+/* ===================== */
+.speech-bubble {
+  --blue: #1e90ff;
+  background: #fff;
+  color: #162750;
+  border: 6px solid var(--blue);
+  border-radius: 22px;
+  padding: clamp(14px, 2vw, 22px) clamp(20px, 2.8vw, 28px);
+  font-weight: 700;
+  font-size: clamp(16px, 2.2vw, 24px);
+  line-height: 1.4;
+  max-width: min(58vw, 600px);
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+  white-space: pre-wrap; /* dukung \n dalam teks */
+
+  /* supaya lebih pas sejajar kepala */
+  transform: translateY(-58%);
+}
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  left: -24px;
+  top: 28%;
+  border-width: 16px 24px 16px 0;
+  border-style: solid;
+  border-color: transparent var(--blue) transparent transparent;
+}
+
+.speech-bubble::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 28%;
+  border-width: 12px 18px 12px 0;
+  border-style: solid;
+  border-color: transparent #fff transparent transparent;
+}
+/* Caret berkedip saat mengetik */
+.caret {
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 1s step-start infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Hint teks bawah */
+.welcome-text {
+  position: absolute;
+  bottom: clamp(16px, 4vh, 36px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-weight: bold;
+  font-size: clamp(12px, 2.4vw, 18px);
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.6);
+  pointer-events: none;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes pulse {
+  0%,100% { opacity: .55; transform: translateX(-50%) translateY(0); }
+  50%     { opacity: 1;    transform: translateX(-50%) translateY(-2px); }
+}
+@keyframes vnIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);     filter: blur(0); }
+}
+@keyframes whiteIn { from { opacity: 0 } to { opacity: 1 } }
+
+/* Pilihan mini dialog */
+.vn-choices {
+  position: absolute;
+  /* di atas teks hint, tidak menutupi dokter */
+  bottom: clamp(60px, 9vh, 100px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: min(80vw, 820px);
+  gap: clamp(10px, 1.8vw, 16px);
+}
+.vn-btn {
+  background: #ffffff;
+  color: #162750;
+  border: 3px solid #1e90ff;
+  border-radius: 14px;
+  padding: clamp(8px, 1.2vw, 12px) clamp(14px, 2vw, 18px);
+  font-weight: 700;
+  font-size: clamp(14px, 2vw, 18px);
+  box-shadow: 0 8px 16px rgba(0,0,0,.18);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.vn-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.22); }
+.vn-btn:active { transform: translateY(0); }
+
+/* Responsif: layar sempit, bubble lebih turun, tombol lebih dekat bawah */
+@media (max-width: 920px) {
+  .doctor { left: 50%; }
+  .speech-bubble {
+    max-width: min(72vw, 560px);
+    transform: translateY(-48%);
+  }
+  .vn-choices { bottom: clamp(58px, 12vh, 110px); max-width: 92vw; }
+}
+
+/* Loading screen */
+.loading-container {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #f7fbff 0%, #e8f3ff 100%);
+  display: grid;
+  place-items: center;
+  z-index: 1200;
+}
+.loading-card {
+  background: #ffffff;
+  border: 4px solid #1e90ff;
+  border-radius: 20px;
+  padding: clamp(16px, 3vw, 28px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.15);
+  display: grid;
+  gap: clamp(12px, 2.4vw, 18px);
+  place-items: center;
+}
+.teethbar {
+  display: flex;
+  gap: clamp(6px, 1.2vw, 12px);
+}
+.tooth {
+  width: clamp(22px, 5vw, 36px);
+  height: clamp(24px, 6vw, 42px);
+  background: #d8e3f3;
+  border: 3px solid #9ab7e8;
+  border-radius: 8px 8px 14px 14px; /* bentuk gigi sederhana */
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,.06);
+  transition: background .25s ease, border-color .25s ease, transform .2s ease;
+}
+.tooth.filled {
+  background: #ffffff;
+  border-color: #1e90ff;
+  transform: translateY(-2px);
+}
+.loading-percent {
+  font-weight: 800;
+  color: #162750;
+  font-size: clamp(16px, 3vw, 24px);
+}
+.loading-fact {
+  color: #234;
+  font-weight: 600;
+  font-size: clamp(13px, 2.2vw, 18px);
+  text-align: center;
+}

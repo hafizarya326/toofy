@@ -1,0 +1,139 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.icon-btn.muted img {
+  filter: grayscale(1) brightness(0.7) drop-shadow(0 0 0 #bbb);
+  background: linear-gradient(135deg, #e0e0e0 60%, #bdbdbd 100%);
+  border-radius: 50%;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ===== Loading Overlay (smooth) ===== */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.92);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.4s; /* sinkron dengan FADE_DURATION_MS */
+  animation: fadeIn 0.4s;
+  will-change: opacity;
+}
+
+.loading-overlay.loading-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Box */
+.loading-box {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.12);
+  padding: 48px 36px 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+}
+
+/* Logo berputar */
+.loading-spin {
+  width: 64px;
+  margin-bottom: 24px;
+  animation: spin 1s linear infinite;
+  will-change: transform;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Judul */
+.loading-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #1976d2;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+/* Progress container */
+.loading-bar {
+  width: 100%;
+  height: 14px;
+  background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+}
+
+/* Progress fill — GPU friendly (transform) */
+.loading-bar-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+  border-radius: 8px;
+  transform: scaleX(0);            /* mulai dari 0 */
+  transform-origin: left center;   /* isi kiri -> kanan */
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); /* ease-out mantul */
+  /* durasi akan di-set inline dari App.jsx */
+  will-change: transform;
+}
+
+/* Saat animasi dimulai */
+.loading-bar-progress.run {
+  transform: scaleX(1);     
+}
+
+/* Reduce motion support */
+@media (prefers-reduced-motion: reduce) {
+  .loading-overlay,
+  .loading-bar-progress,
+  .loading-spin {
+    animation: none !important;
+    transition: none !important;
+  }
+  .loading-bar-progress {
+    transform: scaleX(1);
+  }
+}
