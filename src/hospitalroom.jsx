@@ -64,6 +64,7 @@ const HospitalRoom = ({
 
   // Klik pasien -> bangun path dan mulai jalan
   const goToPatient = (idx) => {
+    if (craftDone[idx]) return;
     const p = PATIENTS[idx];
     pathRef.current = buildPathToPatient(p, doctor);
     idxRef.current = 1; // targetkan waypoint pertama setelah posisi sekarang
@@ -123,6 +124,12 @@ const HospitalRoom = ({
       {PATIENTS.map((p, idx) => {
         const treated = !!treatmentDone[idx];
         const crafted = !!craftDone[idx];
+        const disabled = crafted;
+        const title = disabled
+          ? "Pasien selesai dirawat"
+          : treated
+          ? "Perawatan selesai - siapkan ramuan"
+          : `Pasien: ${p.name}`;
         return (
           <button
             key={p.name}
@@ -130,11 +137,8 @@ const HospitalRoom = ({
             style={{ left: p.x, top: p.y }}
             onClick={() => goToPatient(idx)}
             aria-label={`Panggil dokter ke pasien ${p.name}`}
-            title={
-              crafted ? "Obat siap" :
-              treated ? "Perawatan selesai" :
-              `Pasien: ${p.name}`
-            }
+            title={title}
+            disabled={disabled}
           >
             <img
               className="patientImg"
@@ -144,12 +148,11 @@ const HospitalRoom = ({
             />
             <span className="patientName">{p.name}</span>
 
-            {crafted && <span className="badge ok">Obat siap</span>}
-            {!crafted && treated && <span className="badge done">Selesai</span>}
+            {crafted && <span className="badge done">Selesai</span>}
+            {!crafted && treated && <span className="badge ok">Siap Ramuan</span>}
           </button>
         );
       })}
-
       {/* Dokter */}
       {/* <div className="doctorLabel" style={{ left: doctor.x + 4, top: doctor.y - 10 }}>
         Dr. Lilo

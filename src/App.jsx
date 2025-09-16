@@ -135,12 +135,29 @@ function App() {
   };
 
   const handlePatientClick = (idx) => {
+    if (craftDone[idx]) return;
     setSelectedPatient(idx);
     setScreen('closeup');
   };
+  const resetGameState = () => {
+    setSelectedPatient(null);
+    setTreatmentDone([false, false, false]);
+    setCraftDone([false, false, false]);
+    setPendingBadgeKey(null);
+    setShowBadges(false);
+    setLoadingVisible(false);
+    setLoadingActive(false);
+    setRunProgress(false);
+    try { localStorage.removeItem('game_badges_unlocked_v1'); } catch (_) {}
+  };
+
   const handleBack = () => {
-    if (screen === 'closeup') setScreen('room');
-    else setScreen('lobby');
+    if (screen === 'closeup') {
+      setScreen('room');
+      return;
+    }
+    resetGameState();
+    setScreen('lobby');
   };
   const goToCraft = () => setScreen('craft');
   const finishCraft = () => {
@@ -151,6 +168,7 @@ function App() {
         return next;
       });
     }
+    setSelectedPatient(null);
     setScreen('room');
   };
 

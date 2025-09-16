@@ -105,3 +105,6 @@
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-3px); }
 }
+\n/* Pasien selesai tidak bisa dipilih lagi */
+.patientBtn[disabled] { cursor: default; opacity: 0.75; }
+.patientBtn[disabled] .patientImg { filter: grayscale(60%) drop-shadow(0 4px 8px rgba(0,0,0,.2)); }
