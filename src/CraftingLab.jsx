@@ -121,7 +121,18 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
   }, [recipe.needs, beakerItems]);
 
   const canCraft = beakerItems.length >= 4;
-  const canPour = canCraft && valid && !isPouring;
+  const canPour = canCraft && valid && hasShaken && !isPouring;
+  const pourTitle = canPour
+    ? 'Tuang ke ' + recipe.targetName
+    : isPouring
+    ? 'Sedang menuang...'
+    : !canCraft
+    ? 'Masukkan minimal 4 bahan dulu.'
+    : !valid
+    ? 'Racikan harus sesuai resep sebelum menuang.'
+    : hasShaken
+    ? 'Shake ulang jika perlu sebelum menuang.'
+    : 'Shake ramuan dulu sebelum menuang.';
 
   // Sembunyikan scrollbar halaman saat di lab (tanpa mematikan scroll)
   useEffect(() => {
@@ -141,15 +152,20 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
   const onDrop = (e) => {
     e.preventDefault();
     const id = e.dataTransfer.getData('text/plain');
-    if (!id) return;
-    setBeakerItems((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    if (!id || beakerItems.includes(id)) return;
+    setBeakerItems((prev) => [...prev, id]);
     setIsShaking(true);
     setIsRotten(false);
+    setHasShaken(false);
+    setHasPoured(false);
     setTimeout(() => setIsShaking(false), 600);
   };
 
-  const removeFromBeaker = (id) =>
+  const removeFromBeaker = (id) => {
     setBeakerItems((prev) => prev.filter((x) => x !== id));
+    setHasShaken(false);
+    setHasPoured(false);
+  };
 
   const reset = () => {
     setBeakerItems([]);
@@ -162,15 +178,16 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
   };
 
   const tryShake = () => {
-    setHasShaken(true);
     setIsShaking(true);
     setTimeout(() => setIsShaking(false), 600);
     if (!canCraft) {
       setMessage('Masukkan minimal 4 bahan dulu.');
+      setHasShaken(false);
       return;
     }
+    setHasShaken(true);
     if (valid) {
-      setMessage('Racikan cocok! Siap dituang ke ' + recipe.targetName + '.');
+      setMessage('Racikan cocok! Sekarang bisa dituang ke ' + recipe.targetName + '.');
       return;
     }
     setMessage('Ramuan meledak busuk! Coba kombinasi lain.');
@@ -193,6 +210,7 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
         setIsPouring(false);
         setMessage('Tertuang ke ' + recipe.targetName + '!');
         setBeakerItems([]);
+        setHasShaken(false);
         setHasPoured(true);
       }
     };
@@ -283,7 +301,7 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
             onClick={pourToContainer}
             disabled={!canPour}
             style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid #0f766e', background: canPour ? '#d1fae5' : '#eee', color: canPour ? '#065f46' : '#999', fontWeight: 800, cursor: canPour ? 'pointer' : 'not-allowed' }}
-            title={canPour ? 'Tuang ke ' + recipe.targetName : 'Racikan harus valid (≥4 bahan & sesuai resep).'}
+            title={pourTitle}
           >
             🫗 Tuang ke {recipe.targetName}
           </button>
