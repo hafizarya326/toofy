@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useRef, useState, useEffect } from 'react';
 import Lobby from './lobby';
 import HospitalRoom from './hospitalroom';
@@ -113,13 +112,12 @@ function App() {
 
   // --- Routing & loading (tetap) ---
   const handleStart = () => {
+    // PENTING: Panggil reset di sini untuk memastikan game baru dimulai dari awal
+    resetGameState();
     setLoadingVisible(true);
     setLoadingActive(true);
     setScreen('room');
-
-    // coba pastikan audio hidup setelah interaksi user ini
     ensureAudioPlaying();
-
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setRunProgress(true));
     });
@@ -139,6 +137,7 @@ function App() {
     setSelectedPatient(idx);
     setScreen('closeup');
   };
+
   const resetGameState = () => {
     setSelectedPatient(null);
     setTreatmentDone([false, false, false]);
@@ -152,13 +151,27 @@ function App() {
   };
 
   const handleBack = () => {
+    // If we are on the closeup screen, go back to the hospital room without resetting state.
     if (screen === 'closeup') {
       setScreen('room');
       return;
     }
+    // If we are on the craft screen, go back to the closeup screen without resetting state.
+    if (screen === 'craft') {
+      setScreen('closeup');
+      return;
+    }
+    // If we are on the hospital room screen and press back, reset the game state and go to the lobby.
+    if (screen === 'room') {
+      resetGameState();
+      setScreen('lobby');
+      return;
+    }
+    // As a fallback for any other state, reset the game and go to the lobby.
     resetGameState();
     setScreen('lobby');
   };
+
   const goToCraft = () => setScreen('craft');
   const finishCraft = () => {
     if (selectedPatient != null) {

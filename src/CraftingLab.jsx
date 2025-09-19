@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import ruangRacik from "./assets/ruang_racik.png";
 
 /* ===================== Data ===================== */
 const BASE_INGREDIENTS = [
@@ -234,15 +235,22 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
   /* ---------- Styles ---------- */
   const STAGE_H = 320;
 
-  const card = {
-    padding: 12,
-    borderRadius: 12,
-    background: "rgba(255,255,255,.92)",
-    boxShadow: "0 4px 12px rgba(0,0,0,.08)",
-    display: "flex",
-    flexDirection: "column",
-    minHeight: 0,
-  };
+  // ====== CARD DI-TRANSPARANKAN (hilangkan putih) ======
+// ====== Frosted glass card (lebih halus & nggak nutup background) ======
+const card = {
+  padding: 12,
+  borderRadius: 14,
+  background:
+    "linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.16))",
+  backdropFilter: "blur(8px) saturate(140%)",
+  WebkitBackdropFilter: "blur(8px) saturate(140%)", // Safari
+  border: "1px solid rgba(255,255,255,0.5)",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  display: "flex",
+  flexDirection: "column",
+  minHeight: 0,
+};
+
 
   return (
     <div
@@ -253,7 +261,7 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
         width: "100vw",
         overflow: "hidden",
         background:
-          "url(./assets/background_racik.png) center/cover no-repeat, linear-gradient(180deg,#f8fafc,#eef2ff)",
+          `url(${ruangRacik}) center/cover no-repeat, linear-gradient(180deg,#f8fafc,#eef2ff)`,
         fontFamily: "'Comic Sans MS', Comic Sans, cursive",
       }}
     >
@@ -359,11 +367,11 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
                 justify-content: center; user-select: none; cursor: grab; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.6), 0 1px 3px rgba(0,0,0,.06); }
         .slotFilled { outline: 3px solid #a7f3d0; }
 
-        /* === HANDLE P3K DIPINDAH KE KIRI-BAWAH (seperti tas lama) === */
+        /* === HANDLE P3K DIPINDAH KE KIRI-BAWAH === */
         .p3k-handle {
           position: fixed;
           left: 16px;
-          bottom: 16px;           /* anchor di bawah */
+          bottom: 16px;
           height: 72px;
           width: 72px;
           border-radius: 16px;
@@ -382,32 +390,14 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
 
       {/* ===== Konten yang bisa bergeser saat P3K dibuka ===== */}
       <div className={`content-wrap ${isCabinetOpen ? "content-shift" : ""}`}>
-        {/* Header */}
-        {/* <div
-          style={{
-            display: "flex",
-            gap: 10,
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "4px 10px",
-            borderRadius: 12,
-            background: "rgba(255,255,255,.9)",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 2px 6px rgba(0,0,0,.06)",
-            flex: "0 0 auto",
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: 18, color: "#0f172a", letterSpacing: 0.2 }}>
-            Peracikan Obat — Pasien {patientIdx + 1}
-          </h2>
-        </div> */}
-
         {/* GRID */}
         <div className="lab-grid">
           {/* Resep */}
           <div className="area-recipe" style={{ ...card }}>
-            <h3 style={{ margin: "2px 0 6px" }}>Resep Pasien</h3>
-            <p style={{ margin: 0, color: "#4b5563" }}>
+            <h3 style={{ margin: "2px 0 6px", textShadow: "0 2px 6px rgba(0,0,0,.25)" }}>
+              Resep Pasien
+            </h3>
+            <p style={{ margin: 0, color: "#0f172a", textShadow: "0 2px 6px rgba(255,255,255,.2)" }}>
               Tujuan: <b>{recipe.goal}</b>
             </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
@@ -423,7 +413,7 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
                       padding: "6px 10px",
                       borderRadius: 999,
                       border: "1px solid #e5e7eb",
-                      background: "#f8fafc",
+                      background: "rgba(248,250,252,.9)",
                       fontSize: 13,
                     }}
                   >
@@ -507,7 +497,8 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
               style={{
                 marginTop: 8,
                 fontWeight: 600,
-                color: isRotten ? "#b91c1c" : valid ? "#2e7d32" : "#8d6e63",
+                color: isRotten ? "#b91c1c" : valid ? "#065f46" : "#1f2937",
+                textShadow: "0 2px 6px rgba(255,255,255,.35)",
               }}
             >
               {message ||
@@ -521,7 +512,9 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
 
           {/* Beaker */}
           <div className="area-beaker" style={{ ...card }}>
-            <h3 style={{ margin: "2px 0 8px" }}>🧪 Beaker (Drop Zone)</h3>
+            <h3 style={{ margin: "2px 0 8px", textShadow: "0 2px 6px rgba(0,0,0,.25)" }}>
+              🧪 Beaker (Drop Zone)
+            </h3>
             <div
               ref={beakerRef}
               onDrop={onDrop}
@@ -531,13 +524,13 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
                 position: "relative",
                 height: STAGE_H,
                 borderRadius: 16,
-                background:
-                  "linear-gradient(135deg, rgba(248,250,252,.9) 0%, rgba(238,242,255,.9) 100%)",
+                background: "transparent",              // <<< hilangkan fill putih
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "1px dashed #c7d2fe",
+                border: "1px dashed rgba(199,210,254,.85)",
                 overflow: "hidden",
+                backdropFilter: "none",
               }}
             >
               <BeakerSVG color={beakerColor} filled={beakerItems.length > 0} rotten={isRotten} />
@@ -583,7 +576,7 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
                     left: "50%",
                     transform: "translateX(-50%)",
                     fontSize: 12,
-                    background: "rgba(255,255,255,.85)",
+                    background: "rgba(255,255,255,.6)",   // tip kecil masih terlihat
                     padding: "6px 10px",
                     borderRadius: 999,
                     border: "1px solid #e5e7eb",
@@ -643,17 +636,19 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
 
           {/* Botol */}
           <div className="area-bottle" style={{ ...card }}>
-            <h3 style={{ margin: "2px 0 8px" }}>🧴 Wadah {recipe.targetName}</h3>
+            <h3 style={{ margin: "2px 0 8px", textShadow: "0 2px 6px rgba(0,0,0,.25)" }}>
+              🧴 Wadah {recipe.targetName}
+            </h3>
             <div
               style={{
                 position: "relative",
                 height: STAGE_H,
                 borderRadius: 16,
-                background: "linear-gradient(135deg, #fdf2f8 0%, #eff6ff 100%)",
+                background: "transparent",               // <<< hilangkan fill putih/pink
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "1px dashed #e5e7eb",
+                border: "1px dashed rgba(229,231,235,.85)",
                 overflow: "hidden",
               }}
             >
@@ -680,7 +675,7 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
               </div>
             </div>
 
-            <div style={{ marginTop: 8, fontSize: 12, color: "#64748b" }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: "#0f172a", textShadow: "0 1px 4px rgba(255,255,255,.35)" }}>
               {canPour
                 ? "Siap menuang. Klik Tuang ke Wadah."
                 : "Racikan harus valid (≥4 bahan & sesuai resep) agar bisa dituang."}
@@ -689,14 +684,14 @@ const CraftingLab = ({ patientIdx = 0, onBack, onFinish }) => {
         </div>
       </div>
 
-      {/* ===== Tombol P3K (handle) — sekarang di kiri-bawah ===== */}
+      {/* ===== Tombol P3K (handle) — kiri-bawah ===== */}
       <button
         onClick={() => setIsCabinetOpen((s) => !s)}
         className="p3k-handle"
         title={isCabinetOpen ? "Tutup Kotak P3K" : "Buka Kotak P3K"}
         aria-label="Kotak P3K"
         style={{
-          left: isCabinetOpen ? CABINET_WIDTH + 24 : 16,   // geser saat lemari terbuka
+          left: isCabinetOpen ? CABINET_WIDTH + 24 : 16,
         }}
       >
         <svg width="34" height="34" viewBox="0 0 48 48" aria-hidden>
