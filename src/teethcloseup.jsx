@@ -1,5 +1,8 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+﻿import React, { useMemo, useRef, useState, useEffect } from 'react';
 import Tooth from './tooth';
+import Patient1Clean from './Patient1Clean';
+import Patient2Cavity from './Patient2Cavity';
+import Patient3Extract from './Patient3Extract';
 import borImage from './assets/bor.png';
 
 const teethByPatient = [
@@ -17,7 +20,7 @@ const complaints = [
 const TOOTH_W = 48;
 const TOOTH_H = 60;
 
-const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
+const TeethCloseupGrid = ({ patientIdx = 0, onBack, onComplete }) => {
   const boxRef = useRef(null);
 
   // Modes & positions
@@ -103,19 +106,19 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
     if (isBrushing) {
       setBrushPos(p);
       const ok = tryApplyAt(p, 'dirty', 'normal');
-      if (!ok) pingFeedback('🪥 Tidak ada yang berubah…');
+      if (!ok) pingFeedback('ðŸª¥ Tidak ada yang berubahâ€¦');
     }
     if (isDraggingDrill) {
       setDrillPos(p);
       const ok = tryApplyAt(p, 'cavity', 'filled', true);
       if (ok) setIsDraggingDrill(false);
-      else pingFeedback('🛠️ Bor tidak menemukan bolongan…');
+      else pingFeedback('ðŸ› ï¸ Bor tidak menemukan bolonganâ€¦');
     }
     if (isDraggingExtract) {
       setExtractPos(p);
       const ok = tryApplyAt(p, 'extract', 'extracted', true);
       if (ok) setIsDraggingExtract(false);
-      else pingFeedback('🧷 Tidak ada gigi untuk dicabut…');
+      else pingFeedback('ðŸ§· Tidak ada gigi untuk dicabutâ€¦');
     }
   };
 
@@ -128,7 +131,7 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
   // Klik gigi (fallback)
   const clickTooth = (i) => {
     if (!isDraggingExtract) {
-      pingFeedback('Aktifkan & seret alat 🧷 di atas gigi yang perlu dicabut');
+      pingFeedback('Aktifkan & seret alat ðŸ§· di atas gigi yang perlu dicabut');
       return;
     }
   };
@@ -175,7 +178,7 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
           onMouseUp={() => setIsBrushing(false)}
           title="Tahan & gerakkan di area gigi untuk membersihkan"
         >
-          🪥 Sikat · {remainDirty}
+          ðŸª¥ Sikat Â· {remainDirty}
         </button>
       );
     }
@@ -200,7 +203,7 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
           title="Tahan & gerakkan untuk menambal"
         >
           <img src={borImage} alt="Bor" style={{ width: 24, height: 24 }} />
-          Bor · {remainCavity}
+          Bor Â· {remainCavity}
         </button>
       );
     }
@@ -224,7 +227,7 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
         onMouseUp={() => setIsDraggingExtract(false)}
         title="Tahan & seret di gigi bertanda untuk mencabut"
       >
-        🧷 Cabut · {remainExtract}
+        ðŸ§· Cabut Â· {remainExtract}
       </button>
     );
   };
@@ -255,12 +258,12 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
           userSelect: 'none',
           transition: 'box-shadow .15s ease',
         }}
-        title="Tahan 🪥/🛠️/🧷 lalu seret di area gigi"
+        title="Tahan ðŸª¥/ðŸ› ï¸/ðŸ§· lalu seret di area gigi"
       >
         {/* Baris atas */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
           {teethState.slice(0, 10).map((type, i) => (
-            <div key={i} style={{ cursor: 'pointer' }} onClick={() => clickTooth(i)} title="Untuk cabut, tahan & seret 🧷">
+            <div key={i} style={{ cursor: 'pointer' }} onClick={() => clickTooth(i)} title="Untuk cabut, tahan & seret ðŸ§·">
               <Tooth type={type} rotate={0} />
             </div>
           ))}
@@ -270,31 +273,31 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
           {teethState.slice(10, 20).map((type, j) => {
             const i = j + 10;
             return (
-              <div key={i} style={{ cursor: 'pointer' }} onClick={() => clickTooth(i)} title="Untuk cabut, tahan & seret 🧷">
+              <div key={i} style={{ cursor: 'pointer' }} onClick={() => clickTooth(i)} title="Untuk cabut, tahan & seret ðŸ§·">
                 <Tooth type={type} rotate={0} />
               </div>
             );
           })}
         </div>
 
-        {/* 🪥 sikat draggable */}
+        {/* ðŸª¥ sikat draggable */}
         {isBrushing && (
           <div style={{ position: 'absolute', left: brushPos.x - 20, top: brushPos.y - 20, pointerEvents: 'none', fontSize: 32 }}>
-            🪥
+            ðŸª¥
           </div>
         )}
 
-        {/* 🛠️ bor draggable */}
+        {/* ðŸ› ï¸ bor draggable */}
         {isDraggingDrill && (
           <div style={{ position: 'absolute', left: drillPos.x - 20, top: drillPos.y - 20, pointerEvents: 'none' }}>
             <img src={borImage} alt="Bor" style={{ width: 32, height: 32 }} />
           </div>
         )}
 
-        {/* 🧷 cabut draggable */}
+        {/* ðŸ§· cabut draggable */}
         {isDraggingExtract && (
           <div style={{ position: 'absolute', left: extractPos.x - 16, top: extractPos.y - 16, pointerEvents: 'none', fontSize: 28 }}>
-            🧷
+            ðŸ§·
           </div>
         )}
       </div>
@@ -326,7 +329,7 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
 
       {/* Hint sisa masalah */}
       <div style={{ marginTop: 12, fontSize: 12, color: '#555' }}>
-        Sisa: 🪥 {remainDirty} kotor · 🛠️ {remainCavity} bolong · 🧷 {remainExtract} cabut
+        Sisa: ðŸª¥ {remainDirty} kotor Â· ðŸ› ï¸ {remainCavity} bolong Â· ðŸ§· {remainExtract} cabut
       </div>
 
       {/* ===== Bottom Dock: alat relevan saja, slide in/out dari bawah ===== */}
@@ -371,4 +374,19 @@ const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
   );
 };
 
+const TeethCloseup = ({ patientIdx = 0, onBack, onComplete }) => {
+  if (patientIdx === 0) {
+    return <Patient1Clean onComplete={onComplete} />;
+  }
+  if (patientIdx === 1) {
+    return <Patient2Cavity onComplete={onComplete} />;
+  }
+  if (patientIdx === 2) {
+    return <Patient3Extract onComplete={onComplete} />;
+  }
+  return <TeethCloseupGrid patientIdx={patientIdx} onBack={onBack} onComplete={onComplete} />;
+};
+
 export default TeethCloseup;
+
+
