@@ -1,24 +1,24 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
-import meimeiBefore from './assets/meimei_before.png';
-import gigiMemei from './assets/gigi_memei.png';
-import mirrorImg from './assets/kaca_mulut.png';
-import sondeImg from './assets/sonde.png';
-import borImg from './assets/bor.png';
-import sprayImg from './assets/semprotan.png';
-import curingImg from './assets/sinar_biru.png';
-import lactoImg from './assets/Lactobacillus__2.png';
-import './patient2cavity.css';
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
+import meimeiBefore from "./assets/meimei_before.png";
+import gigiMemei from "./assets/gigi_memei.png";
+import mirrorImg from "./assets/kaca_mulut.png";
+import sondeImg from "./assets/sonde.png";
+import borImg from "./assets/bor.png";
+import sprayImg from "./assets/semprotan.png";
+import curingImg from "./assets/sinar_biru.png";
+import lactoImg from "./assets/Lactobacillus__2.png";
+import "./patient2cavity.css";
 
 const lesionAreas = [
-  { id: 'l-1', x: 32, y: 36, w: 12, h: 14 },
-  { id: 'l-2', x: 48, y: 37, w: 12, h: 14 },
-  { id: 'l-3', x: 40, y: 63, w: 14, h: 13 },
+  { id: "l-1", x: 32, y: 36, w: 12, h: 14 },
+  { id: "l-2", x: 48, y: 37, w: 12, h: 14 },
+  { id: "l-3", x: 40, y: 63, w: 14, h: 13 },
 ];
 
 const bacteriaAreas = [
-  { id: 'b-1', target: 'l-1', x: 28, y: 46, w: 13, h: 12, rotate: -12 },
-  { id: 'b-2', target: 'l-2', x: 56, y: 45, w: 13, h: 12, rotate: 10 },
-  { id: 'b-3', target: 'l-3', x: 44, y: 74, w: 14, h: 13, rotate: 4 },
+  { id: "b-1", target: "l-1", x: 28, y: 46, w: 13, h: 12, rotate: -12 },
+  { id: "b-2", target: "l-2", x: 56, y: 45, w: 13, h: 12, rotate: 10 },
+  { id: "b-3", target: "l-3", x: 44, y: 74, w: 14, h: 13, rotate: 4 },
 ];
 
 const buildStateMap = (areas, initialValue = true) => {
@@ -32,12 +32,17 @@ const buildStateMap = (areas, initialValue = true) => {
 const countTrue = (stateMap) => Object.values(stateMap).filter(Boolean).length;
 
 const isInside = (relX, relY, area) =>
-  relX >= area.x && relX <= area.x + area.w && relY >= area.y && relY <= area.y + area.h;
+  relX >= area.x &&
+  relX <= area.x + area.w &&
+  relY >= area.y &&
+  relY <= area.y + area.h;
 
 const Patient2Cavity = ({ onComplete }) => {
   const stageRef = useRef(null);
-  const [phase, setPhase] = useState('intro');
-  const [status, setStatus] = useState('Gunakan kaca mulut untuk memeriksa gigi Memei.');
+  const [phase, setPhase] = useState("intro");
+  const [status, setStatus] = useState(
+    "Gunakan kaca mulut untuk memeriksa gigi Memei."
+  );
   const [draggingTool, setDraggingTool] = useState(null);
   const [hoveringStage, setHoveringStage] = useState(false);
   const [toolPos, setToolPos] = useState({ x: 0, y: 0 });
@@ -50,87 +55,106 @@ const Patient2Cavity = ({ onComplete }) => {
     cure: false,
   });
 
-  const [decayState, setDecayState] = useState(() => buildStateMap(lesionAreas, true));
-  const [roughState, setRoughState] = useState(() => buildStateMap(lesionAreas, false));
-  const [debrisState, setDebrisState] = useState(() => buildStateMap(lesionAreas, false));
-  const [resinState, setResinState] = useState(() => buildStateMap(lesionAreas, false));
-  const [softResinState, setSoftResinState] = useState(() => buildStateMap(lesionAreas, false));
-  const [bacteriaState, setBacteriaState] = useState(() => buildStateMap(bacteriaAreas, true));
+  const [decayState, setDecayState] = useState(() =>
+    buildStateMap(lesionAreas, true)
+  );
+  const [roughState, setRoughState] = useState(() =>
+    buildStateMap(lesionAreas, false)
+  );
+  const [debrisState, setDebrisState] = useState(() =>
+    buildStateMap(lesionAreas, false)
+  );
+  const [resinState, setResinState] = useState(() =>
+    buildStateMap(lesionAreas, false)
+  );
+  const [softResinState, setSoftResinState] = useState(() =>
+    buildStateMap(lesionAreas, false)
+  );
+  const [bacteriaState, setBacteriaState] = useState(() =>
+    buildStateMap(bacteriaAreas, true)
+  );
 
   const decayRemaining = useMemo(() => countTrue(decayState), [decayState]);
   const roughRemaining = useMemo(() => countTrue(roughState), [roughState]);
   const debrisRemaining = useMemo(() => countTrue(debrisState), [debrisState]);
   const resinRemaining = useMemo(() => countTrue(resinState), [resinState]);
-  const softRemaining = useMemo(() => countTrue(softResinState), [softResinState]);
-  const bacteriaRemaining = useMemo(() => countTrue(bacteriaState), [bacteriaState]);
+  const softRemaining = useMemo(
+    () => countTrue(softResinState),
+    [softResinState]
+  );
+  const bacteriaRemaining = useMemo(
+    () => countTrue(bacteriaState),
+    [bacteriaState]
+  );
 
   const toolSequence = useMemo(
     () => [
       {
-        id: 'mirror-open',
-        label: 'Kaca Mulut',
+        id: "mirror-open",
+        label: "Kaca Mulut",
         asset: mirrorImg,
         available: true,
         done: completed.mirrorOpen,
-        dragHint: 'Seret kaca mulut ke mulut Memei untuk melihat karies.',
-        lockMessage: 'Kaca mulut selalu bisa digunakan.',
+        dragHint: "Seret kaca mulut ke mulut Memei untuk melihat karies.",
+        lockMessage: "Kaca mulut selalu bisa digunakan.",
       },
       {
-        id: 'sonde',
-        label: 'Sonde',
+        id: "sonde",
+        label: "Sonde",
         asset: sondeImg,
         available: completed.mirrorOpen,
         done: completed.sonde,
-        dragHint: 'Kerik jaringan gigi yang rusak berwarna cokelat.',
-        lockMessage: 'Buka tampilan gigi dengan kaca mulut dulu.',
+        dragHint: "Kerik jaringan gigi yang rusak berwarna cokelat.",
+        lockMessage: "Buka tampilan gigi dengan kaca mulut dulu.",
       },
       {
-        id: 'bor',
-        label: 'Bor Gigi',
+        id: "bor",
+        label: "Bor Gigi",
         asset: borImg,
         available: completed.sonde,
         done: completed.drill,
-        dragHint: 'Haluskan dinding lubang gigi yang sudah dibersihkan.',
-        lockMessage: 'Bersihkan karies dengan sonde terlebih dahulu.',
+        dragHint: "Haluskan dinding lubang gigi yang sudah dibersihkan.",
+        lockMessage: "Bersihkan karies dengan sonde terlebih dahulu.",
       },
       {
-        id: 'water',
-        label: 'Selang Air',
+        id: "water",
+        label: "Selang Air",
         asset: sprayImg,
         available: completed.drill,
         done: completed.water,
-        dragHint: 'Semprot area lubang untuk mengusir bakteri dan debu bor.',
-        lockMessage: 'Rapikan bentuk lubang dengan bor dulu.',
+        dragHint: "Semprot area lubang untuk mengusir bakteri dan debu bor.",
+        lockMessage: "Rapikan bentuk lubang dengan bor dulu.",
       },
       {
-        id: 'resin',
-        label: 'Resin Komposit',
+        id: "resin",
+        label: "Resin Komposit",
         asset: null,
-        iconClass: 'resin',
+        iconClass: "resin",
         available: completed.water,
         done: completed.resin,
-        dragHint: 'Isi lubang bersih dengan resin komposit.',
-        lockMessage: 'Pastikan lubang sudah bersih dan kering.',
+        dragHint: "Isi lubang bersih dengan resin komposit.",
+        lockMessage: "Pastikan lubang sudah bersih dan kering.",
       },
       {
-        id: 'cure',
-        label: 'Curing Light',
+        id: "cure",
+        label: "Curing Light",
         asset: curingImg,
         available: completed.resin,
         done: completed.cure,
-        dragHint: 'Arahkan sinar biru untuk mengeraskan resin.',
-        lockMessage: 'Isi lubang dengan resin terlebih dahulu.',
+        dragHint: "Arahkan sinar biru untuk mengeraskan resin.",
+        lockMessage: "Isi lubang dengan resin terlebih dahulu.",
       },
     ],
     [completed]
   );
 
   const stageClassName = useMemo(() => {
-    const base = ['patient2-stage__viewport'];
-    if (phase === 'intro') base.push('is-intro');
-    if (draggingTool === 'mirror-open' && !completed.mirrorOpen) base.push('target-mirror');
-    if (hoveringStage && draggingTool === 'mirror-open') base.push('is-hover');
-    return base.join(' ');
+    const base = ["patient2-stage__viewport"];
+    if (phase === "intro") base.push("is-intro");
+    if (draggingTool === "mirror-open" && !completed.mirrorOpen)
+      base.push("target-mirror");
+    if (hoveringStage && draggingTool === "mirror-open") base.push("is-hover");
+    return base.join(" ");
   }, [phase, draggingTool, hoveringStage, completed]);
 
   useEffect(() => {
@@ -149,13 +173,13 @@ const Patient2Cavity = ({ onComplete }) => {
       setHoveringStage(inside);
 
       if (!inside) return;
-      if (draggingTool === 'mirror-open') return;
-      if (phase !== 'exposed') return;
+      if (draggingTool === "mirror-open") return;
+      if (phase !== "exposed") return;
 
       const relX = ((event.clientX - rect.left) / rect.width) * 100;
       const relY = ((event.clientY - rect.top) / rect.height) * 100;
 
-      if (draggingTool === 'sonde') {
+      if (draggingTool === "sonde") {
         let cleanedId = null;
         lesionAreas.some((area) => {
           if (!decayState[area.id]) return false;
@@ -167,8 +191,9 @@ const Patient2Cavity = ({ onComplete }) => {
           }
           return false;
         });
-        if (cleanedId) setStatus('Jaringan busuk terangkat. Lanjutkan sonde di area lain.');
-      } else if (draggingTool === 'bor') {
+        if (cleanedId)
+          setStatus("Jaringan busuk terangkat. Lanjutkan sonde di area lain.");
+      } else if (draggingTool === "bor") {
         let preppedId = null;
         lesionAreas.some((area) => {
           if (!roughState[area.id]) return false;
@@ -180,13 +205,16 @@ const Patient2Cavity = ({ onComplete }) => {
           }
           return false;
         });
-        if (preppedId) setStatus('Lubang terbentuk rapi. Bersihkan debu bor dengan selang air.');
-      } else if (draggingTool === 'water') {
+        if (preppedId)
+          setStatus(
+            "Lubang terbentuk rapi. Bersihkan debu bor dengan selang air."
+          );
+      } else if (draggingTool === "water") {
         let message = null;
         bacteriaAreas.some((bact) => {
           if (!bacteriaState[bact.id]) return false;
           if (isInside(relX, relY, bact)) {
-            message = 'Koloni Lactobacillus tersapu bersih!';
+            message = "Koloni Lactobacillus tersapu bersih!";
             setBacteriaState((prev) => ({ ...prev, [bact.id]: false }));
             return true;
           }
@@ -206,7 +234,7 @@ const Patient2Cavity = ({ onComplete }) => {
         });
 
         if (rinsedId) {
-          message = 'Area sudah bersih. Siapkan resin komposit.';
+          message = "Area sudah bersih. Siapkan resin komposit.";
           setBacteriaState((prev) => {
             const next = { ...prev };
             bacteriaAreas.forEach((bact) => {
@@ -217,7 +245,7 @@ const Patient2Cavity = ({ onComplete }) => {
         }
 
         if (message) setStatus(message);
-      } else if (draggingTool === 'resin') {
+      } else if (draggingTool === "resin") {
         let filledId = null;
         lesionAreas.some((area) => {
           if (!resinState[area.id]) return false;
@@ -229,8 +257,9 @@ const Patient2Cavity = ({ onComplete }) => {
           }
           return false;
         });
-        if (filledId) setStatus('Resin masuk rapi. Keras-kan dengan sinar biru.');
-      } else if (draggingTool === 'cure') {
+        if (filledId)
+          setStatus("Resin masuk rapi. Keras-kan dengan sinar biru.");
+      } else if (draggingTool === "cure") {
         let curedId = null;
         lesionAreas.some((area) => {
           if (!softResinState[area.id]) return false;
@@ -241,7 +270,10 @@ const Patient2Cavity = ({ onComplete }) => {
           }
           return false;
         });
-        if (curedId) setStatus('Resin telah mengeras! Klik Lanjut bila semua area selesai.');
+        if (curedId)
+          setStatus(
+            "Resin telah mengeras! Klik Lanjut bila semua area selesai."
+          );
       }
     };
 
@@ -251,7 +283,7 @@ const Patient2Cavity = ({ onComplete }) => {
       setHoveringStage(false);
 
       const stage = stageRef.current;
-      if (!stage || active !== 'mirror-open') return;
+      if (!stage || active !== "mirror-open") return;
 
       const rect = stage.getBoundingClientRect();
       const inside =
@@ -260,22 +292,24 @@ const Patient2Cavity = ({ onComplete }) => {
         event.clientY >= rect.top &&
         event.clientY <= rect.bottom;
       if (!inside) {
-        setStatus('Arahkan kaca mulut tepat pada area gigi.');
+        setStatus("Arahkan kaca mulut tepat pada area gigi.");
         return;
       }
 
       if (!completed.mirrorOpen) {
-        setPhase('exposed');
+        setPhase("exposed");
         setCompleted((prev) => ({ ...prev, mirrorOpen: true }));
-        setStatus('Karies dan bakteri tampak jelas. Bersihkan jaringan rusak dengan sonde.');
+        setStatus(
+          "Karies dan bakteri tampak jelas. Bersihkan jaringan rusak dengan sonde."
+        );
       }
     };
 
-    window.addEventListener('pointermove', handleMove);
-    window.addEventListener('pointerup', handleUp);
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
     return () => {
-      window.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
     };
   }, [
     draggingTool,
@@ -292,7 +326,7 @@ const Patient2Cavity = ({ onComplete }) => {
   useEffect(() => {
     if (!draggingTool) return undefined;
     const previous = document.body.style.userSelect;
-    document.body.style.userSelect = 'none';
+    document.body.style.userSelect = "none";
     return () => {
       document.body.style.userSelect = previous;
     };
@@ -302,7 +336,7 @@ const Patient2Cavity = ({ onComplete }) => {
     if (!completed.mirrorOpen) return;
     if (!completed.sonde && decayRemaining === 0) {
       setCompleted((prev) => ({ ...prev, sonde: true }));
-      setStatus('Struktur gigi bersih. Bentuk lubang dengan bor gigi.');
+      setStatus("Struktur gigi bersih. Bentuk lubang dengan bor gigi.");
     }
   }, [completed.mirrorOpen, completed.sonde, decayRemaining]);
 
@@ -310,7 +344,9 @@ const Patient2Cavity = ({ onComplete }) => {
     if (!completed.sonde) return;
     if (!completed.drill && roughRemaining === 0) {
       setCompleted((prev) => ({ ...prev, drill: true }));
-      setStatus('Lubang rapi. Hilangkan bakteri dan sisa bor dengan selang air.');
+      setStatus(
+        "Lubang rapi. Hilangkan bakteri dan sisa bor dengan selang air."
+      );
     }
   }, [completed.sonde, completed.drill, roughRemaining]);
 
@@ -318,7 +354,7 @@ const Patient2Cavity = ({ onComplete }) => {
     if (!completed.drill) return;
     if (!completed.water && debrisRemaining === 0 && bacteriaRemaining === 0) {
       setCompleted((prev) => ({ ...prev, water: true }));
-      setStatus('Area sudah bersih dan kering. Isi dengan resin komposit.');
+      setStatus("Area sudah bersih dan kering. Isi dengan resin komposit.");
     }
   }, [completed.drill, completed.water, debrisRemaining, bacteriaRemaining]);
 
@@ -326,7 +362,7 @@ const Patient2Cavity = ({ onComplete }) => {
     if (!completed.water) return;
     if (!completed.resin && resinRemaining === 0) {
       setCompleted((prev) => ({ ...prev, resin: true }));
-      setStatus('Tambalan terpasang. Keras-kan resin dengan sinar biru.');
+      setStatus("Tambalan terpasang. Keras-kan resin dengan sinar biru.");
     }
   }, [completed.water, completed.resin, resinRemaining]);
 
@@ -334,14 +370,14 @@ const Patient2Cavity = ({ onComplete }) => {
     if (!completed.resin) return;
     if (!completed.cure && softRemaining === 0) {
       setCompleted((prev) => ({ ...prev, cure: true }));
-      setStatus('Tambalan mengeras. Klik Lanjut untuk meracik obat.');
+      setStatus("Tambalan mengeras. Klik Lanjut untuk meracik obat.");
     }
   }, [completed.resin, completed.cure, softRemaining]);
 
   const handleToolPointerDown = (tool, event) => {
     event.preventDefault();
     if (tool.done) {
-      setStatus('Langkah ini sudah selesai. Gunakan alat berikutnya.');
+      setStatus("Langkah ini sudah selesai. Gunakan alat berikutnya.");
       return;
     }
     if (!tool.available) {
@@ -377,7 +413,9 @@ const Patient2Cavity = ({ onComplete }) => {
     <div className="patient2-layout">
       <div className="patient2-info">
         <h2>Memei - Penambalan Karies</h2>
-        <p className="patient2-complaint">"Gigi aku berlubang dan ada bakteri nakal!"</p>
+        <p className="patient2-complaint">
+          "Gigi aku berlubang dan ada bakteri nakal!"
+        </p>
         <div className="patient2-steps">
           <strong>Langkah Perawatan:</strong>
           <ol>
@@ -413,13 +451,19 @@ const Patient2Cavity = ({ onComplete }) => {
         <div
           ref={stageRef}
           className={stageClassName}
-          style={{ backgroundImage: `url(${phase === 'intro' ? meimeiBefore : gigiMemei})` }}
+          style={{
+            backgroundImage: `url(${
+              phase === "intro" ? meimeiBefore : gigiMemei
+            })`,
+          }}
         >
-          {phase === 'intro' && !completed.mirrorOpen && (
-            <div className="patient2-stage__hint">Seret kaca mulut untuk melihat lubang gigi</div>
+          {phase === "intro" && !completed.mirrorOpen && (
+            <div className="patient2-stage__hint">
+              Seret kaca mulut untuk melihat lubang gigi
+            </div>
           )}
 
-          {phase === 'exposed' && (
+          {phase === "exposed" && (
             <>
               {lesionAreas.map((area) => {
                 if (decayState[area.id]) {
@@ -477,7 +521,10 @@ const Patient2Cavity = ({ onComplete }) => {
                     src={lactoImg}
                     alt="Lactobacillus"
                     className="memei-bacteria"
-                    style={{ ...areaStyle(bact), transform: `rotate(${bact.rotate}deg)` }}
+                    style={{
+                      ...areaStyle(bact),
+                      transform: `rotate(${bact.rotate}deg)`,
+                    }}
                   />
                 ) : null
               )}
@@ -496,49 +543,42 @@ const Patient2Cavity = ({ onComplete }) => {
             Lanjut Racik Obat
           </button>
         </div>
-      </div>
 
-      {draggingTool && activeTool && (
-        <div className="patient2-dragGhost" style={{ left: toolPos.x, top: toolPos.y }}>
-          {activeTool.asset ? (
-            <img src={activeTool.asset} alt="" />
-          ) : (
-            <span
-              className={`patient2-toolIcon patient2-toolIcon--${activeTool.iconClass || activeTool.id}`}
-            />
-          )}
-        </div>
-      )}
-
-      <div className="patient2-toolDock">
-        <div className="patient2-toolDock__inner">
-          {toolSequence.map((tool) => (
-            <button
-              key={tool.id}
-              type="button"
-              className={[
-                'patient2-toolBtn',
-                tool.done ? 'is-done' : '',
-                tool.id === draggingTool ? 'is-active' : '',
-                tool.available ? '' : 'is-locked',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onPointerDown={(event) => handleToolPointerDown(tool, event)}
-              title={tool.available ? tool.dragHint : tool.lockMessage}
-            >
-              {tool.asset ? (
-                <img src={tool.asset} alt={tool.label} draggable="false" />
-              ) : (
-                <span className={`patient2-toolIcon patient2-toolIcon--${tool.iconClass || tool.id}`} />
-              )}
-              <span>{tool.label}</span>
-              {tool.done && <span className="patient2-toolBtn__done">Selesai</span>}
-            </button>
-          ))}
+        <div className="patient2-toolDock">
+          <div className="patient2-toolDock__inner">
+            {toolSequence.map((tool) => (
+              <button
+                key={tool.id}
+                type="button"
+                className={[
+                  "patient2-toolBtn",
+                  tool.done ? "is-done" : "",
+                  tool.id === draggingTool ? "is-active" : "",
+                  tool.available ? "" : "is-locked",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onPointerDown={(event) => handleToolPointerDown(tool, event)}
+                title={tool.available ? tool.dragHint : tool.lockMessage}
+              >
+                {tool.asset ? (
+                  <img src={tool.asset} alt={tool.label} draggable="false" />
+                ) : (
+                  <span
+                    className={`patient2-toolIcon patient2-toolIcon--${
+                      tool.iconClass || tool.id
+                    }`}
+                  />
+                )}
+                <span>{tool.label}</span>
+                {tool.done && (
+                  <span className="patient2-toolBtn__done">Selesai</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="patient2-dockSpacer" />
     </div>
   );
 };

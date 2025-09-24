@@ -1,43 +1,67 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import cikoBefore from './assets/ciko_before.png';
 import gigiCiko from './assets/gigi_ciko.png';
+
 import kacaMulutImg from './assets/kaca_mulut.png';
 import sondeImg from './assets/sonde.png';
 import penyedotImg from './assets/penyedot.png';
 import sikatElektrikImg from './assets/sikat_gigi_elektrik.png';
+
+/* === ASET BARU (TAMBAHKAN DI FOLDER ./assets) === */
+import karang1 from './assets/kuman_karang/karang_gigi1.png';
+import karang2 from './assets/kuman_karang/karang_gigi2.png';
+import karang3 from './assets/kuman_karang/karang_gigi3.png';
+import karang4 from './assets/kuman_karang/karang_gigi4.png';
+
+import bercak0 from './assets/kuman_karang/bercak.png';
+import bercak1 from './assets/kuman_karang/bercak2.png';
+
+/* === GENANGAN (sedot) pakai gambar === */
+import genangan1 from './assets/genangan1.png';
+import genangan2 from './assets/genangan2.png';
+import genangan3 from './assets/genangan3.png';
+
 import './patient1clean.css';
 
+// === KOORDINAT AREA ===
 const tartarAreas = [
-  { id: 't-1', x: 19, y: 38, w: 13, h: 11 },
-  { id: 't-2', x: 34, y: 37, w: 13, h: 11 },
-  { id: 't-3', x: 49, y: 37, w: 13, h: 11 },
-  { id: 't-4', x: 64, y: 38, w: 13, h: 11 },
-  { id: 't-5', x: 27, y: 63, w: 12, h: 10 },
-  { id: 't-6', x: 42, y: 64, w: 12, h: 10 },
-  { id: 't-7', x: 57, y: 64, w: 12, h: 10 },
+  // BARIS GIGI ATAS (sekitar tengah atas)
+  { id: 't-1', x: 20, y: 30, w: 15, h: 15 },
+  { id: 't-2', x: 30, y: 35, w: 15, h: 15 },
+  { id: 't-3', x: 50, y: 33, w: 15, h: 15 },
+  { id: 't-4', x: 65, y: 32, w: 15, h: 15 },
+  // BARIS GIGI BAWAH
+  { id: 't-5', x: 23, y: 66, w: 15, h: 15 },
+  { id: 't-6', x: 44, y: 74, w: 15, h: 15 },
+  { id: 't-7', x: 62, y: 67, w: 15, h: 15 },
 ];
 
 const plaqueAreas = [
-  { id: 'p-1', x: 24, y: 29, w: 16, h: 12 },
-  { id: 'p-2', x: 40, y: 29, w: 16, h: 12 },
-  { id: 'p-3', x: 56, y: 29, w: 16, h: 12 },
-  { id: 'p-4', x: 30, y: 55, w: 16, h: 12 },
-  { id: 'p-5', x: 46, y: 55, w: 16, h: 12 },
+  // Atas (sedikit di bawah tartar biar beda layer)
+  { id: 'p-1', x: 38, y: 35, w: 15, h: 15 },
+  { id: 'p-2', x: 54, y: 49, w: 15, h: 15 },
+  { id: 'p-3', x: 70, y: 62, w: 15, h: 15 },
+  // Bawah
+  { id: 'p-4', x: 32, y: 70, w: 20, h: 20 },
+  { id: 'p-5', x: 54, y: 72, w: 15, h: 15 },
 ];
 
 const moistureAreas = [
-  { id: 'm-1', x: 24, y: 73, w: 18, h: 13 },
-  { id: 'm-2', x: 49, y: 74, w: 18, h: 13 },
-  { id: 'm-3', x: 36, y: 80, w: 20, h: 14 },
+  // titik-titik lembab disusun mengikuti gigi bawah
+  { id: 'm-1', x: 31, y: 55, w: 16, h: 10 },
+  { id: 'm-2', x: 48, y: 60, w: 16, h: 10 },
+  { id: 'm-3', x: 55, y: 52, w: 18, h: 11 },
 ];
 
 const buildStateMap = (areas) => {
   const map = {};
-  areas.forEach((area) => {
-    map[area.id] = true;
-  });
+  areas.forEach((area) => { map[area.id] = true; });
   return map;
 };
+
+const TARTAR_SPRITES = [karang1, karang2, karang3, karang4];
+const PLAQUE_SPRITES = [bercak0, bercak1];
+const MOISTURE_SPRITES = [genangan1, genangan2, genangan3];
 
 const Patient1Clean = ({ onComplete }) => {
   const stageRef = useRef(null);
@@ -47,6 +71,7 @@ const Patient1Clean = ({ onComplete }) => {
   const [hoveringStage, setHoveringStage] = useState(false);
   const [toolPos, setToolPos] = useState({ x: 0, y: 0 });
   const [completed, setCompleted] = useState({ mirror: false, sonde: false, penyedot: false, brush: false });
+
   const [tartarState, setTartarState] = useState(() => buildStateMap(tartarAreas));
   const [moistureState, setMoistureState] = useState(() => buildStateMap(moistureAreas));
   const [plaqueState, setPlaqueState] = useState(() => buildStateMap(plaqueAreas));
@@ -55,6 +80,23 @@ const Patient1Clean = ({ onComplete }) => {
   const tartarRemaining = useMemo(() => Object.values(tartarState).filter(Boolean).length, [tartarState]);
   const moistureRemaining = useMemo(() => Object.values(moistureState).filter(Boolean).length, [moistureState]);
   const plaqueRemaining = useMemo(() => Object.values(plaqueState).filter(Boolean).length, [plaqueState]);
+
+  /* Map area -> sprite biar stabil (tidak berubah saat re-render) */
+  const tartarSpriteById = useMemo(() => {
+    const map = {};
+    tartarAreas.forEach((a, i) => { map[a.id] = TARTAR_SPRITES[i % TARTAR_SPRITES.length]; });
+    return map;
+  }, []);
+  const plaqueSpriteById = useMemo(() => {
+    const map = {};
+    plaqueAreas.forEach((a, i) => { map[a.id] = PLAQUE_SPRITES[i % PLAQUE_SPRITES.length]; });
+    return map;
+  }, []);
+  const moistureSpriteById = useMemo(() => {
+    const map = {};
+    moistureAreas.forEach((a, i) => { map[a.id] = MOISTURE_SPRITES[i % MOISTURE_SPRITES.length]; });
+    return map;
+  }, []);
 
   const toolSequence = useMemo(() => ([
     {
@@ -72,7 +114,7 @@ const Patient1Clean = ({ onComplete }) => {
       asset: sondeImg,
       available: completed.mirror,
       done: completed.sonde,
-      dragHint: 'Kerik karang gigi berwarna cokelat di sela gigi.',
+      dragHint: 'Kerik karang gigi (gambar bercokelat) di sela gigi.',
       lockMessage: 'Gunakan kaca mulut dulu supaya giginya terlihat.',
     },
     {
@@ -81,7 +123,7 @@ const Patient1Clean = ({ onComplete }) => {
       asset: penyedotImg,
       available: completed.sonde,
       done: completed.penyedot,
-      dragHint: 'Seret ke area biru untuk mengeringkan rongga mulut.',
+      dragHint: 'Seret ke area genangan untuk mengeringkan rongga mulut.',
       lockMessage: 'Bersihkan karang gigi dengan sonde terlebih dahulu.',
     },
     {
@@ -90,7 +132,7 @@ const Patient1Clean = ({ onComplete }) => {
       asset: sikatElektrikImg,
       available: completed.penyedot,
       done: completed.brush,
-      dragHint: 'Sikat plak kekuningan sampai gigi kembali putih.',
+      dragHint: 'Sikat bercak kekuningan sampai gigi putih.',
       lockMessage: 'Pastikan mulut sudah kering sebelum menyikat.',
     },
   ]), [completed]);
@@ -113,7 +155,9 @@ const Patient1Clean = ({ onComplete }) => {
       const stage = stageRef.current;
       if (!stage) return;
       const rect = stage.getBoundingClientRect();
-      const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      const inside =
+        event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom;
       setHoveringStage(inside);
 
       if (!inside) return;
@@ -175,7 +219,9 @@ const Patient1Clean = ({ onComplete }) => {
       const stage = stageRef.current;
       if (draggingTool === 'mirror' && stage) {
         const rect = stage.getBoundingClientRect();
-        const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+        const inside =
+          event.clientX >= rect.left && event.clientX <= rect.right &&
+          event.clientY >= rect.top && event.clientY <= rect.bottom;
         if (inside) {
           if (!completed.mirror) {
             setPhase('exposed');
@@ -192,7 +238,6 @@ const Patient1Clean = ({ onComplete }) => {
 
     window.addEventListener('pointermove', handleMove);
     window.addEventListener('pointerup', handleUp);
-
     return () => {
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleUp);
@@ -201,8 +246,7 @@ const Patient1Clean = ({ onComplete }) => {
 
   useEffect(() => {
     if (!draggingTool) return undefined;
-    const previousUserSelect = document.body.style.userSelect;
-    document.body.style.userSelect = 'none';
+    const previousUserSelect = document.body.style.userSelect = 'none';
     return () => { document.body.style.userSelect = previousUserSelect; };
   }, [draggingTool]);
 
@@ -238,14 +282,8 @@ const Patient1Clean = ({ onComplete }) => {
 
   const handleToolPointerDown = (tool, event) => {
     event.preventDefault();
-    if (tool.done) {
-      setStatus('Langkah ini sudah beres. Lanjutkan ke alat berikutnya.');
-      return;
-    }
-    if (!tool.available) {
-      setStatus(tool.lockMessage);
-      return;
-    }
+    if (tool.done) { setStatus('Langkah ini sudah beres. Lanjutkan ke alat berikutnya.'); return; }
+    if (!tool.available) { setStatus(tool.lockMessage); return; }
     setDraggingTool(tool.id);
     setToolPos({ x: event.clientX, y: event.clientY });
     setStatus(tool.dragHint);
@@ -275,18 +313,9 @@ const Patient1Clean = ({ onComplete }) => {
           </ol>
         </div>
         <div className="patient1-progress">
-          <div>
-            <span>Karang gigi</span>
-            <strong>{tartarRemaining}</strong>
-          </div>
-          <div>
-            <span>Area basah</span>
-            <strong>{moistureRemaining}</strong>
-          </div>
-          <div>
-            <span>Plak</span>
-            <strong>{plaqueRemaining}</strong>
-          </div>
+          <div><span>Karang gigi</span><strong>{tartarRemaining}</strong></div>
+          <div><span>Area basah</span><strong>{moistureRemaining}</strong></div>
+          <div><span>Plak</span><strong>{plaqueRemaining}</strong></div>
         </div>
       </div>
 
@@ -299,26 +328,54 @@ const Patient1Clean = ({ onComplete }) => {
           {phase === 'intro' && !completed.mirror && (
             <div className="patient1-stage__hint">Seret kaca mulut untuk melihat gigi</div>
           )}
+
           {phase === 'exposed' && (
             <>
-              {tartarAreas.map((area) => (
+              {/* === KARANG GIGI === */}
+              {tartarAreas.map((area) =>
                 tartarState[area.id] ? (
-                  <div key={area.id} className="ciko-dirt ciko-dirt--tartar" style={areaStyle(area)} />
+                  <img
+                    key={area.id}
+                    className="ciko-sprite ciko-sprite--tartar"
+                    style={areaStyle(area)}
+                    src={tartarSpriteById[area.id]}
+                    alt=""
+                    draggable={false}
+                  />
                 ) : null
-              ))}
-              {moistureAreas.map((area) => (
+              )}
+
+              {/* === GENANGAN (gambar) === */}
+              {moistureAreas.map((area) =>
                 moistureState[area.id] ? (
-                  <div key={area.id} className="ciko-dirt ciko-dirt--moist" style={areaStyle(area)} />
+                  <img
+                    key={area.id}
+                    className="ciko-sprite ciko-sprite--moist"
+                    style={areaStyle(area)}
+                    src={moistureSpriteById[area.id]}
+                    alt=""
+                    draggable={false}
+                  />
                 ) : null
-              ))}
-              {plaqueAreas.map((area) => (
+              )}
+
+              {/* === PLAK === */}
+              {plaqueAreas.map((area) =>
                 plaqueState[area.id] ? (
-                  <div key={area.id} className="ciko-dirt ciko-dirt--plaque" style={areaStyle(area)} />
+                  <img
+                    key={area.id}
+                    className="ciko-sprite ciko-sprite--plaque"
+                    style={areaStyle(area)}
+                    src={plaqueSpriteById[area.id]}
+                    alt=""
+                    draggable={false}
+                  />
                 ) : null
-              ))}
+              )}
             </>
           )}
         </div>
+
         <div className="patient1-statusBar">
           <p>{status}</p>
           <button
